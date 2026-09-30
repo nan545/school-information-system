@@ -165,6 +165,22 @@ export const api = {
   getSemesters: () => request<any[]>('/academic/semesters'),
   createSemester: (data: any) => request<any>('/academic/semesters', { method: 'POST', body: JSON.stringify(data) }),
 
+  // Course enrollment
+  getAvailableCourses: () => request<{ academicYear: any; courses: any[] }>('/enrollments/courses'),
+  getMyEnrollments: () => request<any[]>('/enrollments'),
+  enrollInCourse: (subjectId: string) => request<any>('/enrollments', {
+    method: 'POST',
+    body: JSON.stringify({ subjectId }),
+  }),
+  withdrawFromCourse: (id: string) => request<{ message: string }>(`/enrollments/${id}`, { method: 'DELETE' }),
+
+  // Notifications
+  getNotifications: () => request<{ notifications: import('../types/index.ts').NotificationItem[]; unreadCount: number }>('/notifications'),
+  markNotificationRead: (id: string) =>
+    request<{ message: string }>(`/notifications/${id}/read`, { method: 'PATCH' }),
+  markAllNotificationsRead: () =>
+    request<{ message: string }>('/notifications/read-all', { method: 'PATCH' }),
+
   // Results & Examination
   getResults: (params: { classId?: string; subjectId?: string; semesterId?: string; studentId?: string } = {}) => {
     const query = new URLSearchParams();

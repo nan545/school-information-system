@@ -17,6 +17,7 @@ export const TeacherGrades: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (!teacher?.id) return;
@@ -39,6 +40,7 @@ export const TeacherGrades: React.FC = () => {
         }
       } catch (err) {
         console.error('Failed to load grade metadata:', err);
+        setErrorMessage('Could not load classes and semesters. Refresh the page to try again.');
       }
     };
     fetchInit();
@@ -73,6 +75,7 @@ export const TeacherGrades: React.FC = () => {
         setScoresMap(map);
       } catch (err) {
         console.error('Failed to load marks roster:', err);
+        setErrorMessage('Could not load the course roster or existing grades.');
       } finally {
         setLoading(false);
       }
@@ -103,8 +106,16 @@ export const TeacherGrades: React.FC = () => {
 
   const handleSaveGrades = async () => {
     if (!selectedSubjectId || !selectedSemesterId) return;
+    if (students.some((student) => {
+      const score = scoresMap[student.id];
+      return !score || score.caScore < 0 || score.caScore > 30 || score.examScore < 0 || score.examScore > 70;
+    })) {
+      setErrorMessage('Check each score: CA must be 0–30 and exam must be 0–70.');
+      return;
+    }
     setSaving(true);
     setSaveSuccess('');
+    setErrorMessage('');
     try {
       const sem = semesters.find((s) => s.id === selectedSemesterId);
       const academicYearId = sem?.academicYearId || 'cm10000000000000000000000';
@@ -126,7 +137,7 @@ export const TeacherGrades: React.FC = () => {
       setSaveSuccess(`Successfully saved grades for ${records.length} students.`);
       setTimeout(() => setSaveSuccess(''), 4000);
     } catch (err: any) {
-      alert(err.message || 'Failed to save examination grades');
+      setErrorMessage(err.message || 'Failed to save examination grades');
     } finally {
       setSaving(false);
     }
@@ -162,6 +173,12 @@ export const TeacherGrades: React.FC = () => {
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium p-3 rounded-md flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{saveSuccess}</span>
+        </div>
+      )}
+      {errorMessage && (
+        <div role="alert" className="bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium p-3 rounded-md flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
         </div>
       )}
 

@@ -141,6 +141,8 @@ model Subject {
   name         String          // "Advanced Mathematics", "Physics", "Chemistry"
   code         String          @unique // "MATH101", "PHYS201"
   creditHours  Int             @default(3)
+  capacity     Int             @default(30)
+  enrollmentOpen Boolean       @default(true)
   departmentId String
   department   Department      @relation(fields: [departmentId], references: [id])
 
@@ -214,6 +216,7 @@ model Enrollment {
 
   @@index([studentId])
   @@index([classId])
+  @@unique([studentId, subjectId, academicYearId])
 }
 
 model Result {

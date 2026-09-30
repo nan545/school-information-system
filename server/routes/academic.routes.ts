@@ -179,9 +179,15 @@ router.get('/subjects', authenticate, async (req: AuthRequest, res: Response) =>
 
 router.post('/subjects', authenticate, requireRoles('ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
-    const { name, code, creditHours = 3, departmentId } = req.body;
+    const { name, code, creditHours = 3, departmentId, capacity = 30, enrollmentOpen = true } = req.body;
     if (!name || !code || !departmentId) {
       return res.status(400).json({ error: 'Subject name, code, and departmentId are required.' });
+    }
+    if (!Number.isInteger(Number(capacity)) || Number(capacity) < 1) {
+      return res.status(400).json({ error: 'Course capacity must be a positive whole number.' });
+    }
+    if (typeof enrollmentOpen !== 'boolean') {
+      return res.status(400).json({ error: 'Enrollment status must be true or false.' });
     }
 
     const subject = await prisma.subject.create({
@@ -189,6 +195,8 @@ router.post('/subjects', authenticate, requireRoles('ADMIN'), async (req: AuthRe
         name: name.trim(),
         code: code.trim().toUpperCase(),
         creditHours: parseInt(creditHours),
+        capacity: Number(capacity),
+        enrollmentOpen: enrollmentOpen !== false,
         departmentId,
       },
       include: { department: true },
@@ -202,7 +210,13 @@ router.post('/subjects', authenticate, requireRoles('ADMIN'), async (req: AuthRe
 router.put('/subjects/:id', authenticate, requireRoles('ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, code, creditHours, departmentId } = req.body;
+    const { name, code, creditHours, departmentId, capacity, enrollmentOpen } = req.body;
+    if (capacity !== undefined && (!Number.isInteger(Number(capacity)) || Number(capacity) < 1)) {
+      return res.status(400).json({ error: 'Course capacity must be a positive whole number.' });
+    }
+    if (enrollmentOpen !== undefined && typeof enrollmentOpen !== 'boolean') {
+      return res.status(400).json({ error: 'Enrollment status must be true or false.' });
+    }
 
     const updated = await prisma.subject.update({
       where: { id },
@@ -211,6 +225,8 @@ router.put('/subjects/:id', authenticate, requireRoles('ADMIN'), async (req: Aut
         code: code ? code.toUpperCase() : undefined,
         creditHours: creditHours ? parseInt(creditHours) : undefined,
         departmentId,
+        capacity: capacity !== undefined ? Number(capacity) : undefined,
+        enrollmentOpen,
       },
       include: { department: true },
     });

@@ -167,7 +167,7 @@ export const StudentResults: React.FC = () => {
           <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
             Official Course Grade Breakdown
           </span>
-          <span className="text-xs text-slate-500 font-mono">Grading Scale: 40% CA + 60% Final Exam</span>
+          <span className="text-xs text-slate-500 font-mono">Grading Scale: 30% CA + 70% Final Exam</span>
         </div>
 
         {loading ? (

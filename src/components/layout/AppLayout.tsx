@@ -24,6 +24,7 @@ import {
   School,
   ShieldCheck,
 } from 'lucide-react';
+import { NotificationCenter } from '../common/NotificationCenter.tsx';
 
 interface AppLayoutProps {
   currentTab: string;
@@ -41,6 +42,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentTab, onTabChange, c
       return [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { id: 'results', label: 'Examination Results', icon: Award },
+        { id: 'courses', label: 'Courses & Enrollment', icon: BookOpen },
         { id: 'assessments', label: 'Continuous Assessment', icon: FileSpreadsheet },
         { id: 'timetable', label: 'Class Timetable', icon: Calendar },
         { id: 'attendance', label: 'Attendance Record', icon: Clock },
@@ -130,6 +132,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentTab, onTabChange, c
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-3">
+            <NotificationCenter onNavigate={onTabChange} />
             {/* Quick Portal Switcher */}
             <div className="hidden sm:flex items-center bg-slate-800 p-0.5 rounded-md border border-slate-700 text-xs">
               <button
@@ -165,7 +168,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentTab, onTabChange, c
             </div>
 
             {/* User Info */}
-            <div className="flex flex-col text-right">
+            <div className="hidden flex-col text-right sm:flex">
               <span className="text-xs font-semibold text-slate-200 leading-tight">
                 {user?.fullName || 'User'}
               </span>
