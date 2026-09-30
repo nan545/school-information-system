@@ -1,0 +1,6 @@
+{
+  "name": "Apex School Information System & Student Portal",
+  "description": "Comprehensive, production-grade student information management portal for students, teachers, and school administrators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
