@@ -1,8 +1,10 @@
 import { Router, Response } from 'express';
 import { prisma } from '../db.ts';
 import { authenticate, AuthRequest, requireRoles } from '../middleware/auth.ts';
+import { apiRateLimit } from '../middleware/rateLimit.ts';
 
 const router = Router();
+router.use(apiRateLimit);
 
 router.get('/courses', authenticate, async (_req: AuthRequest, res: Response) => {
   try {
