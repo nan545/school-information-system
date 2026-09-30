@@ -427,8 +427,9 @@ router.get('/:id/results', authenticate, async (req: AuthRequest, res: Response)
 
     // Compute GPA or average statistics
     const totalCourses = results.length;
-    const averageScore = totalCourses > 0
-      ? (results.reduce((acc, r) => acc + r.totalScore, 0) / totalCourses).toFixed(2)
+    const totalCredits = results.reduce((acc, result) => acc + (result.subject.creditHours || 3), 0);
+    const averageScore = totalCredits > 0
+      ? (results.reduce((acc, result) => acc + result.totalScore * (result.subject.creditHours || 3), 0) / totalCredits).toFixed(2)
       : '0.00';
 
     return res.json({

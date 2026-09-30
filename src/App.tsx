@@ -13,6 +13,7 @@ import { StudentAssignments } from './components/student/StudentAssignments.tsx'
 import { StudentFees } from './components/student/StudentFees.tsx';
 import { StudentDocuments } from './components/student/StudentDocuments.tsx';
 import { StudentProfile } from './components/student/StudentProfile.tsx';
+import { StudentCourses } from './components/student/StudentCourses.tsx';
 
 // Teacher Components
 import { TeacherDashboard } from './components/teacher/TeacherDashboard.tsx';
@@ -58,6 +59,8 @@ function MainApp() {
           return <StudentDashboard onNavigate={setCurrentTab} />;
         case 'results':
           return <StudentResults />;
+        case 'courses':
+          return <StudentCourses />;
         case 'assessments':
           return <StudentAssessments />;
         case 'attendance':

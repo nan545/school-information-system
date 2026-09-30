@@ -15,6 +15,8 @@ import announcementsRouter from './server/routes/announcements.routes.ts';
 import financeRouter from './server/routes/finance.routes.ts';
 import timetablesRouter from './server/routes/timetables.routes.ts';
 import reportsRouter from './server/routes/reports.routes.ts';
+import notificationsRouter from './server/routes/notifications.routes.ts';
+import enrollmentsRouter from './server/routes/enrollments.routes.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -48,6 +50,8 @@ async function startServer() {
   app.use('/api/finance', financeRouter);
   app.use('/api/timetables', timetablesRouter);
   app.use('/api/reports', reportsRouter);
+  app.use('/api/notifications', notificationsRouter);
+  app.use('/api/enrollments', enrollmentsRouter);
 
   // Direct REST aliases matching user prompt requirements
   // e.g. GET /api/classes, GET /api/subjects, GET /api/payments

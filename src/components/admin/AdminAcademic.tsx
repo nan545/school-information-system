@@ -28,6 +28,7 @@ export const AdminAcademic: React.FC = () => {
   const [subjectName, setSubjectName] = useState('');
   const [subjectCode, setSubjectCode] = useState('');
   const [creditHours, setCreditHours] = useState('3');
+  const [courseCapacity, setCourseCapacity] = useState('30');
   const [subjectDeptId, setSubjectDeptId] = useState('');
 
   // Department modal form
@@ -128,10 +129,12 @@ export const AdminAcademic: React.FC = () => {
         code: subjectCode,
         creditHours: parseInt(creditHours),
         departmentId: subjectDeptId,
+        capacity: parseInt(courseCapacity),
       });
       setShowSubjectModal(false);
       setSubjectName('');
       setSubjectCode('');
+      setCourseCapacity('30');
       loadAll();
     } catch (err: any) {
       alert(err.message || 'Failed to create subject');
@@ -292,7 +295,7 @@ export const AdminAcademic: React.FC = () => {
             </button>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
                 <tr>
@@ -354,13 +357,15 @@ export const AdminAcademic: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-hidden">
+          <div className="bg-white border border-slate-200 rounded-md shadow-xs overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
                 <tr>
                   <th className="p-3">Course Code</th>
                   <th className="p-3">Course Title</th>
                   <th className="p-3 text-center">Credit Hours</th>
+                  <th className="p-3 text-center">Capacity</th>
+                  <th className="p-3">Enrollment</th>
                   <th className="p-3">Department</th>
                   <th className="p-3">Assigned Faculty</th>
                 </tr>
@@ -368,7 +373,7 @@ export const AdminAcademic: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {subjects.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-400 text-xs">
+                    <td colSpan={7} className="p-8 text-center text-slate-400 text-xs">
                       No courses or subjects cataloged yet. Click "Add Course / Subject" to define course units.
                     </td>
                   </tr>
@@ -378,6 +383,30 @@ export const AdminAcademic: React.FC = () => {
                       <td className="p-3 font-mono font-bold text-blue-700">{sub.code}</td>
                       <td className="p-3 font-semibold text-slate-900">{sub.name}</td>
                       <td className="p-3 text-center font-mono font-medium text-slate-800">{sub.creditHours}</td>
+                      <td className="p-3 text-center">
+                        <input
+                          aria-label={`${sub.name} course capacity`}
+                          type="number"
+                          min="1"
+                          defaultValue={sub.capacity}
+                          onBlur={(event) => {
+                            const capacity = Number(event.currentTarget.value);
+                            if (Number.isInteger(capacity) && capacity > 0 && capacity !== sub.capacity) {
+                              void api.updateSubject(sub.id, { capacity }).then(loadAll).catch((err: any) => alert(err.message || 'Failed to update course capacity'));
+                            }
+                          }}
+                          className="w-16 rounded border border-slate-300 px-1.5 py-1 text-center"
+                        />
+                      </td>
+                      <td className="p-3">
+                        <button
+                          type="button"
+                          onClick={() => void api.updateSubject(sub.id, { enrollmentOpen: !sub.enrollmentOpen }).then(loadAll).catch((err: any) => alert(err.message || 'Failed to update enrollment status'))}
+                          className={`rounded-full px-2 py-1 text-[10px] font-semibold ${sub.enrollmentOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}
+                        >
+                          {sub.enrollmentOpen ? 'Open' : 'Closed'}
+                        </button>
+                      </td>
                       <td className="p-3 text-slate-700">{sub.department?.name || 'General'}</td>
                       <td className="p-3 text-slate-600">
                         {sub.teacherSubjects && sub.teacherSubjects.length > 0 ? (
@@ -691,6 +720,17 @@ export const AdminAcademic: React.FC = () => {
                     className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-xs font-mono"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Enrollment capacity:</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={courseCapacity}
+                  onChange={(e) => setCourseCapacity(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-md p-2 text-xs"
+                />
               </div>
               <div>
                 <label className="block font-semibold mb-1">Academic Department:</label>
